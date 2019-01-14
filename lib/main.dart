@@ -7,6 +7,10 @@ import 'package:flutter_redux/flutter_redux.dart';
 class AppState {
   final int counter;
   AppState(this.counter);
+
+  bool isDecrementable() {
+    return counter > 0;
+  }
 }
 
 enum Actions { Increment, Decrement }
@@ -92,15 +96,15 @@ class MyHomePage extends StatelessWidget {
   }
 
   Widget _buildDecrementButton(BuildContext context) {
-    return StoreConnector(
-      converter: (Store<AppState> store) {
-        return () => store.dispatch(Actions.Decrement);
-      },
-      builder: (context, callback) => RaisedButton(
-            child: Icon(Icons.remove),
-            onPressed: callback,
-          ),
-    );
+    return StoreConnector(converter: (Store<AppState> store) {
+      return () => store.dispatch(Actions.Decrement);
+    }, builder: (context, callback) {
+      bool isDecrementable = store.state.isDecrementable();
+      return RaisedButton(
+        child: Icon(Icons.remove),
+        onPressed: (isDecrementable) ? callback : null,
+      );
+    });
   }
 }
 
