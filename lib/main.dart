@@ -67,29 +67,40 @@ class MyHomePage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text('Number of times you pressed the button:'),
-                StoreConnector(
-                    converter: (Store<AppState> store) => store.state.counter,
-                    builder: (context, counter) => Text('$counter',
-                        style: Theme.of(context).textTheme.display1)),
-                StoreConnector(converter: (Store<AppState> store) {
-                  return () => store.dispatch(Actions.Increment);
-                }, builder: (context, callback) {
-                  return RaisedButton(
-                      child: Icon(Icons.add), onPressed: callback);
-                }),
-                StoreConnector(
-                  converter: (Store<AppState> store) {
-                    return () => store.dispatch(Actions.Decrement);
-                  },
-                  builder: (context, callback) => RaisedButton(
-                        child: Icon(Icons.remove),
-                        onPressed: callback,
-                      ),
-                )
+                _buildCounterLabel(context),
+                _buildIncrementButton(context),
+                _buildDecrementButton(context)
               ],
             ),
           ),
         ));
+  }
+
+  Widget _buildCounterLabel(BuildContext context) {
+    return StoreConnector(
+        converter: (Store<AppState> store) => store.state.counter,
+        builder: (context, counter) =>
+            Text('$counter', style: Theme.of(context).textTheme.display1));
+  }
+
+  Widget _buildIncrementButton(BuildContext context) {
+    return StoreConnector(converter: (Store<AppState> store) {
+      return () => store.dispatch(Actions.Increment);
+    }, builder: (context, callback) {
+      return RaisedButton(child: Icon(Icons.add), onPressed: callback);
+    });
+  }
+
+  Widget _buildDecrementButton(BuildContext context) {
+    return StoreConnector(
+      converter: (Store<AppState> store) {
+        return () => store.dispatch(Actions.Decrement);
+      },
+      builder: (context, callback) => RaisedButton(
+            child: Icon(Icons.remove),
+            onPressed: callback,
+          ),
+    );
   }
 }
 
