@@ -17,6 +17,9 @@ AppState reducer(AppState prev, action) {
   }
 
   if (action == Actions.Decrement) {
+    if (prev.counter == 0) {
+      return prev;
+    }
     return AppState(prev.counter - 1);
   }
 
@@ -68,12 +71,12 @@ class MyHomePage extends StatelessWidget {
                     converter: (Store<AppState> store) => store.state.counter,
                     builder: (context, counter) => Text('$counter',
                         style: Theme.of(context).textTheme.display1)),
-                StoreConnector(
-                    converter: (Store<AppState> store) {
-                      return () => store.dispatch(Actions.Increment);
-                    },
-                    builder: (context, callback) => RaisedButton(
-                        child: Icon(Icons.add), onPressed: callback)),
+                StoreConnector(converter: (Store<AppState> store) {
+                  return () => store.dispatch(Actions.Increment);
+                }, builder: (context, callback) {
+                  return RaisedButton(
+                      child: Icon(Icons.add), onPressed: callback);
+                }),
                 StoreConnector(
                   converter: (Store<AppState> store) {
                     return () => store.dispatch(Actions.Decrement);
