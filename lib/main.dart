@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+
+enum Actions { Increment, Decrement }
 
 @immutable
 class AppState {
@@ -13,9 +14,7 @@ class AppState {
   }
 }
 
-enum Actions { Increment, Decrement }
-
-AppState reducer(AppState prev, action) {
+AppState counterReducer(AppState prev, dynamic action) {
   if (action == Actions.Increment) {
     return AppState(prev.counter + 1);
   }
@@ -57,8 +56,8 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatelessWidget {
-  final Store<AppState> store =
-      Store(reducer, initialState: AppState(0), middleware: [middleware]);
+  final Store<AppState> store = Store(counterReducer,
+      initialState: AppState(0), middleware: [middleware]);
 
   @override
   Widget build(BuildContext context) {
@@ -81,14 +80,15 @@ class MyHomePage extends StatelessWidget {
   }
 
   Widget _buildCounterLabel(BuildContext context) {
-    return StoreConnector(
+    return StoreConnector<AppState, int>(
         converter: (Store<AppState> store) => store.state.counter,
         builder: (context, counter) =>
             Text('$counter', style: Theme.of(context).textTheme.display1));
   }
 
   Widget _buildIncrementButton(BuildContext context) {
-    return StoreConnector(converter: (Store<AppState> store) {
+    return StoreConnector<AppState, VoidCallback>(
+        converter: (Store<AppState> store) {
       return () => store.dispatch(Actions.Increment);
     }, builder: (context, callback) {
       return RaisedButton(child: Icon(Icons.add), onPressed: callback);
@@ -96,7 +96,8 @@ class MyHomePage extends StatelessWidget {
   }
 
   Widget _buildDecrementButton(BuildContext context) {
-    return StoreConnector(converter: (Store<AppState> store) {
+    return StoreConnector<AppState, VoidCallback>(
+        converter: (Store<AppState> store) {
       return () => store.dispatch(Actions.Decrement);
     }, builder: (context, callback) {
       bool isDecrementable = store.state.isDecrementable();
