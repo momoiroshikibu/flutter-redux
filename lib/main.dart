@@ -18,6 +18,18 @@ AppState reducer(AppState prev, action) {
   return prev;
 }
 
+void middleware(Store<AppState> store, action, NextDispatcher next) {
+  if (action == Actions.Increment) {
+    print('current count is ${store.state.counter}, and going to be updated.');
+  }
+
+  next(action);
+
+  if (action == Actions.Increment) {
+    print('current count is updated: ${store.state.counter}');
+  }
+}
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -29,7 +41,8 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatelessWidget {
-  final Store<AppState> store = Store(reducer, initialState: AppState(0));
+  final Store<AppState> store =
+      Store(reducer, initialState: AppState(0), middleware: [middleware]);
 
   @override
   Widget build(BuildContext context) {
