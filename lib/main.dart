@@ -9,18 +9,27 @@ class AppState {
   AppState(this.counter);
 }
 
-enum Actions { Increment }
+enum Actions { Increment, Decrement }
 
 AppState reducer(AppState prev, action) {
   if (action == Actions.Increment) {
     return AppState(prev.counter + 1);
   }
+
+  if (action == Actions.Decrement) {
+    return AppState(prev.counter - 1);
+  }
+
   return prev;
 }
 
 void middleware(Store<AppState> store, action, NextDispatcher next) {
   if (action == Actions.Increment) {
-    print('current count is ${store.state.counter}, and going to be updated.');
+    print(
+        'current count is ${store.state.counter}, and going to be incremented.');
+  } else if (action == Actions.Decrement) {
+    print(
+        'current count is ${store.state.counter}, and going to be decremented.');
   }
 
   next(action);
@@ -58,19 +67,24 @@ class MyHomePage extends StatelessWidget {
                 StoreConnector(
                     converter: (Store<AppState> store) => store.state.counter,
                     builder: (context, counter) => Text('$counter',
-                        style: Theme.of(context).textTheme.display1))
+                        style: Theme.of(context).textTheme.display1)),
+                StoreConnector(
+                    converter: (Store<AppState> store) {
+                      return () => store.dispatch(Actions.Increment);
+                    },
+                    builder: (context, callback) => RaisedButton(
+                        child: Icon(Icons.add), onPressed: callback)),
+                StoreConnector(
+                  converter: (Store<AppState> store) {
+                    return () => store.dispatch(Actions.Decrement);
+                  },
+                  builder: (context, callback) => RaisedButton(
+                        child: Icon(Icons.remove),
+                        onPressed: callback,
+                      ),
+                )
               ],
             ),
-          ),
-          floatingActionButton: StoreConnector(
-            converter: (Store<AppState> store) {
-              return () => store.dispatch(Actions.Increment);
-            },
-            builder: (context, callback) => FloatingActionButton(
-                  onPressed: callback,
-                  tooltip: 'Increment',
-                  child: Icon(Icons.add),
-                ),
           ),
         ));
   }
